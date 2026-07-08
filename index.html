@@ -3,298 +3,366 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enrico — Registro</title>
+<title>Quanto manca</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
+  /* =========================================================
+     COSA MODIFICARE — tutto quello che ti serve è qui in cima.
+     Ogni evento ha: titolo, sottotitolo, data/ora, emoji, tema.
+     Formato data: anno, mese (1-12), giorno, ora, minuto.
+     ========================================================= */
+
   :root{
-    --ink: #12151c;
-    --ink-raised: #171b23;
-    --paper: #ede8dd;
-    --paper-dim: #8b8d93;
-    --signal: #4fd8c4;
-    --flag: #e0a458;
-    --line: rgba(237,232,221,0.12);
-    --line-strong: rgba(237,232,221,0.22);
+    --bg: #0f0e17;
+    --card: #1a1826;
+    --card-hi: #221f31;
+    --ink: #fff7f0;
+    --dim: #9b95ad;
+    --line: rgba(255,247,240,0.08);
+
+    --sardegna: #f4a259;
+    --cani: #6ee7b7;
+    --noi: #f472b6;
   }
 
-  *{ box-sizing: border-box; }
+  *{ box-sizing: border-box; margin: 0; padding: 0; }
 
-  html{ scroll-behavior: smooth; }
+  html, body{ height: 100%; }
 
   body{
-    margin: 0;
-    background: var(--ink);
-    color: var(--paper);
-    font-family: 'IBM Plex Sans', sans-serif;
-    line-height: 1.5;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
   }
 
-  a{ color: inherit; }
+  #hearts{
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    overflow: hidden;
+  }
+  .heart{
+    position: absolute;
+    font-size: 22px;
+    animation: rise 2.4s ease-out forwards;
+    will-change: transform, opacity;
+  }
+  @keyframes rise{
+    0%{ transform: translateY(0) scale(0.6) rotate(0deg); opacity: 1; }
+    100%{ transform: translateY(-70vh) scale(1.1) rotate(var(--r)); opacity: 0; }
+  }
 
   .wrap{
-    max-width: 760px;
+    max-width: 640px;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 42px 22px 60px;
+    position: relative;
+    z-index: 1;
   }
 
-  /* status bar */
-  .statusbar{
-    border-bottom: 1px solid var(--line);
-  }
-  .statusbar-inner{
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 18px;
-    padding: 14px 24px;
+  header{ margin-bottom: 34px; }
+  .eyebrow{
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
-    letter-spacing: 0.04em;
-    color: var(--paper-dim);
-    max-width: 760px;
-    margin: 0 auto;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 10px;
   }
-  .dot{
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--signal);
-    box-shadow: 0 0 0 3px rgba(79,216,196,0.15);
-    margin-right: 7px;
-    flex-shrink: 0;
-  }
-  .statusbar-inner span.sep{ color: var(--line-strong); }
-
-  /* hero */
-  .hero{
-    padding: 64px 0 40px;
-  }
-  .hero h1{
+  h1{
     font-family: 'Fraunces', serif;
-    font-optical-sizing: auto;
-    font-weight: 600;
-    font-size: clamp(38px, 7vw, 56px);
+    font-weight: 500;
+    font-size: clamp(30px, 8vw, 42px);
     letter-spacing: -0.01em;
-    margin: 0 0 14px;
+    line-height: 1.05;
   }
-  .hero p{
-    font-size: 16px;
-    color: var(--paper-dim);
-    max-width: 46ch;
-    margin: 0;
+  h1 .amp{ color: var(--noi); font-style: italic; }
+
+  .cards{
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
   }
 
-  /* log */
-  .log{
-    border-top: 1px solid var(--line-strong);
-    padding: 8px 0 60px;
-  }
-  .entry{
-    display: grid;
-    grid-template-columns: 56px 1fr auto;
-    align-items: start;
-    gap: 4px 18px;
-    padding: 26px 0;
-    border-bottom: 1px solid var(--line);
-    text-decoration: none;
-    transition: background 0.15s ease;
+  .card{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 22px 22px 20px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.35s cubic-bezier(.2,.8,.2,1),
+                background 0.3s ease,
+                border-color 0.3s ease;
+    will-change: transform;
   }
   @media (prefers-reduced-motion: reduce){
-    .entry{ transition: none; }
+    .card{ transition: background 0.2s ease, border-color 0.2s ease; }
+    .heart{ animation: none; display: none; }
   }
-  .entry:hover, .entry:focus-visible{
-    background: var(--ink-raised);
-    margin: 0 -16px;
-    padding-left: 16px;
-    padding-right: 16px;
-    border-radius: 4px;
-    outline: none;
-  }
-  .entry:focus-visible{
-    box-shadow: 0 0 0 2px var(--signal);
-  }
-  .entry-index{
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    color: var(--paper-dim);
-    padding-top: 4px;
-  }
-  .entry-index .status-dot{
-    display: block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    margin-bottom: 8px;
-  }
-  .entry-index .status-dot.live{ background: var(--signal); }
-  .entry-index .status-dot.draft{ background: var(--flag); }
+  .card:hover{ border-color: rgba(255,247,240,0.16); }
+  .card:focus-visible{ outline: 2px solid var(--ink); outline-offset: 3px; }
 
-  .entry-title{
+  .card::before{
+    content:"";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--accent);
+  }
+
+  .card[data-focus="true"]{
+    background: var(--card-hi);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    transform: scale(1.015);
+  }
+  .card[data-dim="true"]{ opacity: 0.62; }
+
+  .card-top{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .emoji{
+    font-size: 26px;
+    line-height: 1;
+    filter: saturate(1.1);
+  }
+  .titles{ flex: 1; min-width: 0; }
+  .card-title{
     font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: 19px;
-    margin: 0 0 6px;
+    font-weight: 500;
+    font-size: 20px;
+    color: var(--accent);
   }
-  .entry-desc{
-    font-size: 14.5px;
-    color: var(--paper-dim);
-    margin: 0 0 10px;
-    max-width: 52ch;
-  }
-  .entry-tags{
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11.5px;
-    color: var(--flag);
-    letter-spacing: 0.02em;
-  }
-  .entry-tags span{ margin-right: 10px; }
-
-  .entry-date{
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    color: var(--paper-dim);
-    white-space: nowrap;
-    padding-top: 4px;
-  }
-
-  .entry-arrow{
-    display: none;
-  }
-
-  /* empty state */
-  .empty{
-    padding: 48px 0;
-    color: var(--paper-dim);
-  }
-  .empty p{
-    margin: 0 0 6px;
-    font-size: 15px;
-  }
-  .empty code{
-    font-family: 'IBM Plex Mono', monospace;
-    background: var(--ink-raised);
-    padding: 2px 6px;
-    border-radius: 3px;
+  .card-sub{
     font-size: 13px;
-    color: var(--paper);
+    color: var(--dim);
+    margin-top: 2px;
   }
-
-  footer{
-    border-top: 1px solid var(--line);
-    padding: 22px 0 40px;
+  .tag{
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 11.5px;
-    color: var(--paper-dim);
-    letter-spacing: 0.02em;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: var(--dim);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 9px;
+    white-space: nowrap;
   }
 
-  @media (max-width: 560px){
-    .entry{
-      grid-template-columns: 40px 1fr;
-    }
-    .entry-date{
-      grid-column: 2;
-      padding-top: 0;
-    }
+  .clock{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
   }
+  .unit{ text-align: center; }
+  .num{
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    font-size: clamp(24px, 8vw, 34px);
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .lbl{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-top: 7px;
+  }
+
+  .arrived{
+    text-align: center;
+    padding: 6px 0 2px;
+  }
+  .arrived .big{
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 26px;
+    color: var(--accent);
+  }
+  .arrived .small{
+    font-size: 13px;
+    color: var(--dim);
+    margin-top: 4px;
+  }
+
+  .hint{
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--dim);
+    margin-top: 30px;
+    letter-spacing: 0.04em;
+  }
+  .hint i{ opacity: 0.7; }
 </style>
 </head>
 <body>
 
-  <div class="statusbar">
-    <div class="statusbar-inner">
-      <span><span class="dot"></span>SISTEMA ONLINE</span>
-      <span class="sep">/</span>
-      <span id="status-count">0 VOCI REGISTRATE</span>
-      <span class="sep">/</span>
-      <span>OSPITATO SU GITHUB PAGES</span>
-    </div>
-  </div>
+<div id="hearts" aria-hidden="true"></div>
 
-  <div class="wrap">
-    <div class="hero">
-      <h1>Enrico —</h1>
-      <p>Un registro di pagine, esperimenti e cose che pubblico qui via via che le costruisco. Niente di sistematico: solo un posto dove finiscono.</p>
-    </div>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">quanto manca a…</div>
+    <h1>Le nostre <span class="amp">prossime</span> volte</h1>
+  </header>
 
-    <div class="log" id="log"></div>
-  </div>
+  <div class="cards" id="cards"></div>
 
-  <footer>
-    <div class="wrap">registro statico — nessun server, nessun database, solo file</div>
-  </footer>
+  <p class="hint">tocca una tessera per metterla a fuoco · tocca lo sfondo per un piccolo saluto <i>♥</i></p>
+</div>
 
 <script>
-  /*
-    COME AGGIUNGERE UNA NUOVA VOCE
-    -------------------------------
-    Aggiungi un nuovo oggetto in CIMA all'array "entries" qui sotto
-    (ordine cronologico inverso: la voce più recente sta per prima).
-
-    Campi:
-      title       -> titolo della voce
-      description -> una riga di descrizione
-      url         -> link alla pagina/artifact (relativo, es. "compleanno-luigi/")
-      date        -> data leggibile, es. "12 lug 2026"
-      tags        -> array di stringhe, es. ["html", "compleanno"]
-      status      -> "live" (pubblicata) oppure "draft" (bozza, non ancora online)
-
-    Esempio:
-      {
-        title: "Compleanno di Luigi",
-        description: "Un sito compleanno con countdown e una fotogallery.",
-        url: "compleanno-luigi/",
-        date: "12 lug 2026",
-        tags: ["html", "compleanno"],
-        status: "live"
-      },
-  */
-  const entries = [
-    // <- aggiungi qui le nuove voci, una virgola dopo l'altra
+  /* -------- gli eventi (modifica qui) -------- */
+  const EVENTS = [
+    {
+      id: "noi",
+      title: "Ci rivediamo",
+      sub: "finalmente, di persona",
+      emoji: "🫂",
+      tag: "VEN 20:30",
+      accent: getComputedStyle(document.documentElement).getPropertyValue('--noi'),
+      date: new Date(2026, 6, 10, 20, 30, 0),
+      arrived: { big: "Sei qui.", small: "il resto può aspettare" }
+    },
+    {
+      id: "cani",
+      title: "Concerto dei Cani",
+      sub: "in piedi, a cantare male insieme",
+      emoji: "🎸",
+      tag: "DOM 20:00",
+      accent: getComputedStyle(document.documentElement).getPropertyValue('--cani'),
+      date: new Date(2026, 6, 12, 20, 0, 0),
+      arrived: { big: "Si suona!", small: "occhio agli assoli" }
+    },
+    {
+      id: "sardegna",
+      title: "Sardegna",
+      sub: "mare, sole, zero sveglie",
+      emoji: "🏖️",
+      tag: "3 AGO 15:00",
+      accent: getComputedStyle(document.documentElement).getPropertyValue('--sardegna'),
+      date: new Date(2026, 7, 3, 15, 0, 0),
+      arrived: { big: "Si parte!", small: "hai preso il costume?" }
+    }
   ];
 
-  const logEl = document.getElementById('log');
-  const countEl = document.getElementById('status-count');
+  const cardsEl = document.getElementById('cards');
+  const heartsEl = document.getElementById('hearts');
+  let focused = null;
 
-  countEl.textContent = entries.length + (entries.length === 1 ? ' VOCE REGISTRATA' : ' VOCI REGISTRATE');
-
-  if (entries.length === 0){
-    logEl.innerHTML = `
-      <div class="empty">
-        <p>Nessuna voce ancora.</p>
-        <p>Aggiungi la prima modificando l'array <code>entries</code> in fondo a questo file.</p>
+  EVENTS.forEach(ev => {
+    const c = document.createElement('div');
+    c.className = 'card';
+    c.style.setProperty('--accent', ev.accent.trim());
+    c.setAttribute('tabindex', '0');
+    c.setAttribute('role', 'button');
+    c.dataset.id = ev.id;
+    c.innerHTML = `
+      <div class="card-top">
+        <span class="emoji">${ev.emoji}</span>
+        <div class="titles">
+          <div class="card-title">${ev.title}</div>
+          <div class="card-sub">${ev.sub}</div>
+        </div>
+        <span class="tag">${ev.tag}</span>
       </div>
+      <div class="body" data-body="${ev.id}"></div>
     `;
-  } else {
-    entries.forEach((e, i) => {
-      const index = String(entries.length - i).padStart(3, '0');
-      const tags = (e.tags || []).map(t => `<span>#${t}</span>`).join('');
-      const statusClass = e.status === 'draft' ? 'draft' : 'live';
+    const toggle = (e) => {
+      e.stopPropagation();
+      focused = (focused === ev.id) ? null : ev.id;
+      applyFocus();
+    };
+    c.addEventListener('click', toggle);
+    c.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(e); }
+    });
+    cardsEl.appendChild(c);
+  });
 
-      const a = document.createElement('a');
-      a.className = 'entry';
-      a.href = e.url || '#';
-
-      a.innerHTML = `
-        <div class="entry-index">
-          <span class="status-dot ${statusClass}"></span>
-          ${index}
-        </div>
-        <div>
-          <h2 class="entry-title">${e.title}</h2>
-          <p class="entry-desc">${e.description || ''}</p>
-          <div class="entry-tags">${tags}</div>
-        </div>
-        <div class="entry-date">${e.date || ''}</div>
-      `;
-
-      logEl.appendChild(a);
+  function applyFocus(){
+    document.querySelectorAll('.card').forEach(c => {
+      const isF = c.dataset.id === focused;
+      c.dataset.focus = focused ? String(isF) : "false";
+      c.dataset.dim = (focused && !isF) ? "true" : "false";
     });
   }
+
+  function pad(n){ return String(n).padStart(2, '0'); }
+
+  function render(){
+    const now = new Date();
+    EVENTS.forEach(ev => {
+      const body = document.querySelector(`[data-body="${ev.id}"]`);
+      let diff = ev.date - now;
+      if (diff <= 0){
+        body.innerHTML = `
+          <div class="arrived">
+            <div class="big">${ev.arrived.big}</div>
+            <div class="small">${ev.arrived.small}</div>
+          </div>`;
+        return;
+      }
+      const d = Math.floor(diff / 86400000); diff -= d*86400000;
+      const h = Math.floor(diff / 3600000);  diff -= h*3600000;
+      const m = Math.floor(diff / 60000);    diff -= m*60000;
+      const s = Math.floor(diff / 1000);
+      body.innerHTML = `
+        <div class="clock">
+          <div class="unit"><div class="num">${d}</div><div class="lbl">giorni</div></div>
+          <div class="unit"><div class="num">${pad(h)}</div><div class="lbl">ore</div></div>
+          <div class="unit"><div class="num">${pad(m)}</div><div class="lbl">min</div></div>
+          <div class="unit"><div class="num">${pad(s)}</div><div class="lbl">sec</div></div>
+        </div>`;
+    });
+  }
+
+  render();
+  setInterval(render, 1000);
+
+  /* -------- cuoricini al tocco sullo sfondo -------- */
+  const GLYPHS = ['♥','💛','💚','💗'];
+  function spawnHearts(x, y){
+    const n = 5 + Math.floor(Math.random()*3);
+    for (let i=0; i<n; i++){
+      const h = document.createElement('span');
+      h.className = 'heart';
+      h.textContent = GLYPHS[Math.floor(Math.random()*GLYPHS.length)];
+      const dx = (Math.random()-0.5) * 120;
+      h.style.left = (x + dx) + 'px';
+      h.style.top = y + 'px';
+      h.style.setProperty('--r', (Math.random()*80-40) + 'deg');
+      h.style.animationDelay = (Math.random()*0.15) + 's';
+      h.style.fontSize = (16 + Math.random()*14) + 'px';
+      heartsEl.appendChild(h);
+      setTimeout(() => h.remove(), 2700);
+    }
+  }
+
+  document.body.addEventListener('click', (e) => {
+    if (e.target.closest('.card')) return;
+    spawnHearts(e.clientX, e.clientY);
+  });
+  document.body.addEventListener('touchstart', (e) => {
+    if (e.target.closest('.card')) return;
+    const t = e.touches[0];
+    if (t) spawnHearts(t.clientX, t.clientY);
+  }, { passive: true });
 </script>
 
 </body>
