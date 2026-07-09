@@ -3,367 +3,530 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quanto manca</title>
+<title>Binario di Mezzo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  /* =========================================================
-     COSA MODIFICARE — tutto quello che ti serve è qui in cima.
-     Ogni evento ha: titolo, sottotitolo, data/ora, emoji, tema.
-     Formato data: anno, mese (1-12), giorno, ora, minuto.
-     ========================================================= */
-
   :root{
-    --bg: #0f0e17;
-    --card: #1a1826;
-    --card-hi: #221f31;
-    --ink: #fff7f0;
-    --dim: #9b95ad;
-    --line: rgba(255,247,240,0.08);
-
-    --sardegna: #f4a259;
-    --cani: #6ee7b7;
-    --noi: #f472b6;
+    --bg: #101019;
+    --card: #1a1a28;
+    --card-hi: #232336;
+    --ink: #f4efe6;
+    --dim: #948fa6;
+    --line: rgba(244,239,230,0.09);
+    --mi: #7dd3fc;   /* Milano */
+    --bo: #f9a8d4;   /* Bologna */
+    --ok: #6ee7b7;
+    --warn: #fbbf24;
   }
-
   *{ box-sizing: border-box; margin: 0; padding: 0; }
-
-  html, body{ height: 100%; }
-
   body{
     background: var(--bg);
     color: var(--ink);
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
-    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
-    position: relative;
   }
+  .wrap{ max-width: 560px; margin: 0 auto; padding: 34px 20px 70px; }
 
-  #hearts{
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 50;
-    overflow: hidden;
-  }
-  .heart{
-    position: absolute;
-    font-size: 22px;
-    animation: rise 2.4s ease-out forwards;
-    will-change: transform, opacity;
-  }
-  @keyframes rise{
-    0%{ transform: translateY(0) scale(0.6) rotate(0deg); opacity: 1; }
-    100%{ transform: translateY(-70vh) scale(1.1) rotate(var(--r)); opacity: 0; }
-  }
-
-  .wrap{
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 42px 22px 60px;
-    position: relative;
-    z-index: 1;
-  }
-
-  header{ margin-bottom: 34px; }
   .eyebrow{
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--dim);
-    margin-bottom: 10px;
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--dim); margin-bottom: 8px;
   }
   h1{
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-size: clamp(30px, 8vw, 42px);
-    letter-spacing: -0.01em;
-    line-height: 1.05;
+    font-family: 'Fraunces', serif; font-weight: 500;
+    font-size: clamp(28px, 7vw, 38px); line-height: 1.08; margin-bottom: 6px;
   }
-  h1 .amp{ color: var(--noi); font-style: italic; }
+  .sub{ color: var(--dim); font-size: 14px; line-height: 1.55; }
 
-  .cards{
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+  /* ------- mappa ------- */
+  .map{ margin: 26px 0 8px; }
+  .map svg{ width: 100%; height: auto; display: block; }
+  .st-lbl{ font-family: 'IBM Plex Mono', monospace; font-size: 11px; fill: var(--dim); }
+  .st-lbl.done{ fill: var(--ink); }
+  .rail{ stroke: var(--line); stroke-width: 3; }
+  .rail-done-mi{ stroke: var(--mi); stroke-width: 3; }
+  .rail-done-bo{ stroke: var(--bo); stroke-width: 3; }
+  .station{ fill: var(--card-hi); stroke: var(--dim); stroke-width: 1.5; }
+  .dot-mi{ fill: var(--mi); }
+  .dot-bo{ fill: var(--bo); }
+  .dot{ transition: cx 0.9s cubic-bezier(.3,.8,.3,1); }
+
+  .legend{
+    display: flex; gap: 18px; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--dim);
+    margin-bottom: 26px;
   }
+  .legend b{ font-weight: 500; }
+  .pip{ display:inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
 
+  /* ------- carte ------- */
   .card{
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    padding: 22px 22px 20px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.35s cubic-bezier(.2,.8,.2,1),
-                background 0.3s ease,
-                border-color 0.3s ease;
-    will-change: transform;
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 18px; padding: 22px; margin-bottom: 14px;
+  }
+  .card h2{
+    font-family: 'Fraunces', serif; font-weight: 500; font-size: 19px; margin-bottom: 4px;
+  }
+  .card .route{
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.08em; color: var(--dim); margin-bottom: 14px;
+  }
+  .card p{ font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+  .card p.flavor{ color: var(--dim); font-style: italic; margin-bottom: 12px; }
+  .puzzle{
+    background: var(--bg); border: 1px dashed var(--line);
+    border-radius: 12px; padding: 16px; margin: 14px 0;
+    font-size: 15px; line-height: 1.65;
+  }
+  .puzzle .big{
+    font-family: 'IBM Plex Mono', monospace; font-size: 22px;
+    letter-spacing: 0.25em; display: block; text-align: center; margin: 10px 0;
+  }
+  .puzzle ul{ list-style: none; margin-top: 8px; }
+  .puzzle li{ font-family: 'IBM Plex Mono', monospace; padding: 3px 0; }
+
+  label{
+    display: block; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--dim); margin: 14px 0 6px;
+  }
+  input[type=text]{
+    width: 100%; background: var(--bg); border: 1px solid var(--line);
+    border-radius: 10px; color: var(--ink); font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px; padding: 12px 14px; outline: none;
+  }
+  input[type=text]:focus{ border-color: var(--dim); }
+  button{
+    margin-top: 12px; width: 100%;
+    background: var(--ink); color: var(--bg); border: none;
+    border-radius: 10px; padding: 13px; font-family: 'Inter', sans-serif;
+    font-weight: 500; font-size: 15px; cursor: pointer;
+  }
+  button:active{ transform: scale(0.985); }
+  button.ghost{
+    background: transparent; color: var(--dim);
+    border: 1px solid var(--line); font-weight: 400;
+  }
+  .feedback{
+    font-size: 13.5px; margin-top: 10px; min-height: 18px;
+  }
+  .feedback.err{ color: var(--warn); }
+  .feedback.ok{ color: var(--ok); }
+
+  .codebox{
+    background: var(--card-hi); border-radius: 12px;
+    padding: 16px; margin-top: 14px; text-align: center;
+  }
+  .codebox .cap{
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim);
+  }
+  .codebox .code{
+    font-family: 'IBM Plex Mono', monospace; font-size: 26px;
+    letter-spacing: 0.2em; margin-top: 6px; color: var(--ok);
+  }
+
+  .locked{
+    text-align: center; color: var(--dim); font-size: 14px; padding: 8px 0;
+  }
+  .locked .lock{ font-size: 22px; display: block; margin-bottom: 6px; }
+
+  .role-pick{ display: flex; gap: 12px; margin-top: 22px; }
+  .role-pick button{ margin-top: 0; padding: 22px 12px; font-size: 16px; border-radius: 14px; }
+  .role-pick .mi{ background: var(--mi); }
+  .role-pick .bo{ background: var(--bo); }
+
+  .final{ text-align: center; padding: 20px 0; }
+  .final .big{
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 30px; line-height: 1.25; margin: 12px 0;
+  }
+  .final .half{
+    font-family: 'Fraunces', serif; font-size: 20px; font-style: italic;
+    color: var(--ok); margin: 14px 0;
+  }
+
+  .foot{
+    text-align: center; margin-top: 30px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--dim);
+  }
+  .foot a{ color: var(--dim); }
+
+  #hearts{ position: fixed; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; }
+  .heart{ position: absolute; animation: rise 2.4s ease-out forwards; }
+  @keyframes rise{
+    0%{ transform: translateY(0) scale(0.6); opacity: 1; }
+    100%{ transform: translateY(-70vh) scale(1.15) rotate(var(--r)); opacity: 0; }
   }
   @media (prefers-reduced-motion: reduce){
-    .card{ transition: background 0.2s ease, border-color 0.2s ease; }
     .heart{ animation: none; display: none; }
+    .dot{ transition: none; }
   }
-  .card:hover{ border-color: rgba(255,247,240,0.16); }
-  .card:focus-visible{ outline: 2px solid var(--ink); outline-offset: 3px; }
-
-  .card::before{
-    content:"";
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 4px;
-    background: var(--accent);
-  }
-
-  .card[data-focus="true"]{
-    background: var(--card-hi);
-    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
-    transform: scale(1.015);
-  }
-  .card[data-dim="true"]{ opacity: 0.62; }
-
-  .card-top{
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 18px;
-  }
-  .emoji{
-    font-size: 26px;
-    line-height: 1;
-    filter: saturate(1.1);
-  }
-  .titles{ flex: 1; min-width: 0; }
-  .card-title{
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-size: 20px;
-    color: var(--accent);
-  }
-  .card-sub{
-    font-size: 13px;
-    color: var(--dim);
-    margin-top: 2px;
-  }
-  .tag{
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10.5px;
-    letter-spacing: 0.08em;
-    color: var(--dim);
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 4px 9px;
-    white-space: nowrap;
-  }
-
-  .clock{
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-  }
-  .unit{ text-align: center; }
-  .num{
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 500;
-    font-size: clamp(24px, 8vw, 34px);
-    color: var(--ink);
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-  }
-  .lbl{
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--dim);
-    margin-top: 7px;
-  }
-
-  .arrived{
-    text-align: center;
-    padding: 6px 0 2px;
-  }
-  .arrived .big{
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-size: 26px;
-    color: var(--accent);
-  }
-  .arrived .small{
-    font-size: 13px;
-    color: var(--dim);
-    margin-top: 4px;
-  }
-
-  .hint{
-    text-align: center;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    color: var(--dim);
-    margin-top: 30px;
-    letter-spacing: 0.04em;
-  }
-  .hint i{ opacity: 0.7; }
 </style>
 </head>
 <body>
-
 <div id="hearts" aria-hidden="true"></div>
-
-<div class="wrap">
-  <header>
-    <div class="eyebrow">quanto manca a…</div>
-    <h1>Le nostre <span class="amp">prossime</span> volte</h1>
-  </header>
-
-  <div class="cards" id="cards"></div>
-
-  <p class="hint">tocca una tessera per metterla a fuoco · tocca lo sfondo per un piccolo saluto <i>♥</i></p>
-</div>
+<div class="wrap" id="app"></div>
 
 <script>
-  /* -------- gli eventi (modifica qui) -------- */
-  const EVENTS = [
+/* ============================================================
+   CONFIG — cambia qui i nomi mostrati nel gioco
+   ============================================================ */
+const NAMES = { milano: "Enrico", bologna: "Lei ♥" };
+
+/* rot13: le soluzioni sono offuscate così chi apre il sorgente
+   non si spoilera per sbaglio. rot13(rot13(x)) = x */
+function rot13(s){
+  return s.replace(/[a-zA-Z]/g, c => {
+    const base = c <= 'Z' ? 65 : 97;
+    return String.fromCharCode((c.charCodeAt(0) - base + 13) % 26 + base);
+  });
+}
+function norm(s){
+  return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+          .toUpperCase().replace(/[^A-Z0-9]/g,'');
+}
+
+/* ============================================================
+   LE TAPPE
+   gate     = codice del partner richiesto per sbloccare (rot13)
+   answers  = soluzioni accettate (rot13)
+   send     = codice da mandare al partner dopo la soluzione (rot13)
+   ============================================================ */
+const STAGES = {
+  milano: [
     {
-      id: "noi",
-      title: "Ci rivediamo",
-      sub: "finalmente, di persona",
-      emoji: "🫂",
-      tag: "VEN 20:30",
-      accent: getComputedStyle(document.documentElement).getPropertyValue('--noi'),
-      date: new Date(2026, 6, 10, 20, 30, 0),
-      arrived: { big: "Sei qui.", small: "il resto può aspettare" }
+      from: "Milano", to: "Lodi",
+      gate: null,
+      flavor: "Milano Centrale, binario 12. Il tabellone delle partenze è impazzito: tutte le lettere sono slittate.",
+      puzzle: `Ogni lettera della tua destinazione è slittata di <b>3 posizioni in avanti</b> nell'alfabeto. Il tabellone mostra:<span class="big">O R G L</span>Qual è la vera destinazione?`,
+      hint: "Se sul tabellone c'è una D, la lettera vera è la A.",
+      answers: ["YBQV"],
+      send: "BAQR",
+      sendNote: "È l'unica cosa che le serve per partire da Bologna."
     },
     {
-      id: "cani",
-      title: "Concerto dei Cani",
-      sub: "in piedi, a cantare male insieme",
-      emoji: "🎸",
-      tag: "DOM 20:00",
-      accent: getComputedStyle(document.documentElement).getPropertyValue('--cani'),
-      date: new Date(2026, 6, 12, 20, 0, 0),
-      arrived: { big: "Si suona!", small: "occhio agli assoli" }
+      from: "Lodi", to: "Piacenza",
+      gate: "7",
+      gateLabel: "Il numero che ti ha mandato lei",
+      flavor: "A Lodi il controllore borbotta: «Questo treno ferma solo ai chilometri giusti…»",
+      puzzle: `Il treno ferma ai chilometri:<span class="big">7 · 14 · 28 · 56 · ?</span>Il primo numero te l'ha dato lei. A che chilometro è la prossima fermata?`,
+      hint: "Guarda come cresce la distanza tra una fermata e l'altra.",
+      answers: ["112"],
+      send: "FCRPPUVB",
+      sendNote: "Non è un oggetto a caso: le dirà come leggere."
     },
     {
-      id: "sardegna",
-      title: "Sardegna",
-      sub: "mare, sole, zero sveglie",
-      emoji: "🏖️",
-      tag: "3 AGO 15:00",
-      accent: getComputedStyle(document.documentElement).getPropertyValue('--sardegna'),
-      date: new Date(2026, 7, 3, 15, 0, 0),
-      arrived: { big: "Si parte!", small: "hai preso il costume?" }
+      from: "Piacenza", to: "Parma",
+      gate: "PVADHR",
+      gateLabel: "La parola che ti ha mandato lei",
+      flavor: "Ultima tratta. Il codice ricevuto ti dice quante lettere ha la tua meta.",
+      puzzle: `Indovinello:<br><br><i>Sono un fiume, sono una città,<br>mi trovi nel prosciutto e nel violino da toccar non si potrà.</i><br><br>Tante lettere quante ne dice il codice ricevuto.`,
+      hint: "Il violino… pensa a un formaggio con una crosta famosa.",
+      answers: ["CNEZN"],
+      send: "VAVMVNYV",
+      sendNote: "Per lei non è una parola: è un'istruzione."
     }
-  ];
+  ],
+  bologna: [
+    {
+      from: "Bologna", to: "Modena",
+      gate: "BAQR",
+      gateLabel: "La parola che ti ha mandato lui",
+      flavor: "Bologna Centrale. Il capostazione ha mescolato le lettere del biglietto — e ne ha perse due per strada.",
+      puzzle: `Prendi le lettere della parola che ti ha mandato lui, aggiungi una <b>M</b> e una <b>A</b>, e riordina tutto.<br><br>È la tua prossima fermata.`,
+      hint: "È una città emiliana famosa per motori e aceto.",
+      answers: ["ZBQRAN"],
+      send: "7",
+      sendNote: "Un numero solo. A lui servirà per contare le fermate."
+    },
+    {
+      from: "Modena", to: "Reggio Emilia",
+      gate: "FCRPPUVB",
+      gateLabel: "La parola che ti ha mandato lui",
+      flavor: "Sul finestrino appannato qualcuno ha scritto qualcosa. Ma si legge solo in un modo…",
+      puzzle: `La parola ricevuta ti dice <b>come</b> leggere questa scritta:<span class="big">AILIME OIGGER</span>Dove sei diretta?`,
+      hint: "Cosa fa uno specchio alle parole?",
+      answers: ["ERTTVB", "ERTTVBRZVYVN"],
+      send: "PVADHR",
+      sendNote: "A lui servirà per misurare la sua meta."
+    },
+    {
+      from: "Reggio Emilia", to: "Parma",
+      gate: "VAVMVNYV",
+      gateLabel: "La parola che ti ha mandato lui",
+      flavor: "Ultima tratta. Cinque parole sul tabellone. Il codice ricevuto è l'istruzione per usarle.",
+      puzzle: `Applica il codice ricevuto a queste parole:<ul><li>Ponte</li><li>Alba</li><li>Rotaia</li><li>Mattino</li><li>Arrivo</li></ul>Dove vi incontrate?`,
+      hint: "Prendi da ogni parola solo quello che il codice dice di prendere.",
+      answers: ["CNEZN"],
+      send: null,
+      sendNote: null
+    }
+  ]
+};
 
-  const cardsEl = document.getElementById('cards');
-  const heartsEl = document.getElementById('hearts');
-  let focused = null;
+/* metà frase finale, da mandarsi a vicenda */
+const FINAL_HALF = {
+  milano: "«A metà strada…»",
+  bologna: "«…ci sei sempre tu.»"
+};
 
-  EVENTS.forEach(ev => {
-    const c = document.createElement('div');
-    c.className = 'card';
-    c.style.setProperty('--accent', ev.accent.trim());
-    c.setAttribute('tabindex', '0');
-    c.setAttribute('role', 'button');
-    c.dataset.id = ev.id;
-    c.innerHTML = `
-      <div class="card-top">
-        <span class="emoji">${ev.emoji}</span>
-        <div class="titles">
-          <div class="card-title">${ev.title}</div>
-          <div class="card-sub">${ev.sub}</div>
-        </div>
-        <span class="tag">${ev.tag}</span>
+/* stazioni sulla mappa, da ovest a est */
+const MAP_STOPS = ["Milano","Lodi","Piacenza","Parma","Reggio E.","Modena","Bologna"];
+const MI_PATH = [0,1,2,3];   /* indici tappe di lui */
+const BO_PATH = [6,5,4,3];   /* indici tappe di lei */
+
+/* ------------ stato ------------ */
+const store = {
+  get role(){ return localStorage.getItem('bdm_role'); },
+  set role(v){ localStorage.setItem('bdm_role', v); },
+  prog(role){ return parseInt(localStorage.getItem('bdm_prog_'+role) || '0'); },
+  setProg(role, v){ localStorage.setItem('bdm_prog_'+role, String(v)); },
+  partner(role){ return parseInt(localStorage.getItem('bdm_partner_'+role) || '0'); },
+  setPartner(role, v){ localStorage.setItem('bdm_partner_'+role, String(Math.max(v, this.partner(role)))); },
+  met(role){ return localStorage.getItem('bdm_met_'+role) === '1'; },
+  setMet(role){ localStorage.setItem('bdm_met_'+role, '1'); }
+};
+
+const app = document.getElementById('app');
+
+function otherRole(r){ return r === 'milano' ? 'bologna' : 'milano'; }
+
+/* ------------ mappa svg ------------ */
+function mapSVG(role){
+  const meProg = store.prog(role);
+  const paProg = store.partner(role);
+  const met = store.met(role);
+
+  const xs = [40, 135, 230, 325, 420, 515, 610];
+  const y = 46;
+
+  const miSteps = met ? 3 : (role === 'milano' ? meProg : paProg);
+  const boSteps = met ? 3 : (role === 'bologna' ? meProg : paProg);
+
+  const miX = xs[MI_PATH[Math.min(miSteps,3)]];
+  const boX = xs[BO_PATH[Math.min(boSteps,3)]];
+
+  let rails = '';
+  for (let i=0; i<6; i++){
+    let cls = 'rail';
+    if (i < MI_PATH[Math.min(miSteps,3)]) cls = 'rail-done-mi';
+    if (5-i < boSteps && i >= 3) cls = 'rail-done-bo';
+    rails += `<line x1="${xs[i]}" y1="${y}" x2="${xs[i+1]}" y2="${y}" class="${cls}"/>`;
+  }
+
+  let stations = '';
+  MAP_STOPS.forEach((name, i) => {
+    const reached = (MI_PATH.indexOf(i) > -1 && MI_PATH.indexOf(i) <= miSteps) ||
+                    (BO_PATH.indexOf(i) > -1 && BO_PATH.indexOf(i) <= boSteps);
+    stations += `<circle cx="${xs[i]}" cy="${y}" r="6" class="station"/>
+      <text x="${xs[i]}" y="${y+26}" text-anchor="middle" class="st-lbl ${reached?'done':''}">${name}</text>`;
+  });
+
+  const dots = met
+    ? `<circle cx="${xs[3]-7}" cy="${y-16}" r="7" class="dot dot-mi"/>
+       <circle cx="${xs[3]+7}" cy="${y-16}" r="7" class="dot dot-bo"/>
+       <text x="${xs[3]}" y="${y-30}" text-anchor="middle" style="font-size:16px">♥</text>`
+    : `<circle cx="${miX}" cy="${y-16}" r="7" class="dot dot-mi"/>
+       <circle cx="${boX}" cy="${y-16}" r="7" class="dot dot-bo"/>`;
+
+  return `<div class="map"><svg viewBox="0 0 650 92" xmlns="http://www.w3.org/2000/svg">
+    ${rails}${stations}${dots}</svg></div>
+    <div class="legend">
+      <span><span class="pip" style="background:var(--mi)"></span><b>${NAMES.milano}</b></span>
+      <span><span class="pip" style="background:var(--bo)"></span><b>${NAMES.bologna}</b></span>
+    </div>`;
+}
+
+/* ------------ schermate ------------ */
+function renderRolePick(){
+  app.innerHTML = `
+    <div class="eyebrow">un gioco per due</div>
+    <h1>Binario di Mezzo</h1>
+    <p class="sub">Tu parti da una città, l'altra persona dall'altra. Ogni enigma risolto ti dà un codice da mandare via messaggio: senza i codici dell'altro, nessuno dei due arriva. Vi incontrate a metà strada.</p>
+    <div class="role-pick">
+      <button class="mi" id="pick-mi">Parto da<br><b>Milano</b></button>
+      <button class="bo" id="pick-bo">Parto da<br><b>Bologna</b></button>
+    </div>
+    <p class="foot">scegli la tua città: la scelta resta salvata su questo telefono</p>`;
+  document.getElementById('pick-mi').onclick = () => { store.role = 'milano'; render(); };
+  document.getElementById('pick-bo').onclick = () => { store.role = 'bologna'; render(); };
+}
+
+function renderGame(){
+  const role = store.role;
+  const stages = STAGES[role];
+  const prog = store.prog(role);
+
+  if (prog >= 3){ renderFinal(); return; }
+
+  const st = stages[prog];
+  const partnerName = NAMES[otherRole(role)];
+  const needGate = st.gate !== null;
+  const gateOpen = !needGate || sessionStorage.getItem('bdm_gate_'+role+'_'+prog) === '1';
+
+  let inner;
+  if (!gateOpen){
+    inner = `
+      <div class="locked"><span class="lock">🔒</span>
+        Questa tappa si sblocca con un codice di ${partnerName}.<br>
+        ${prog === 0 ? "Aspetta il suo primo messaggio…" : "Se non ti è ancora arrivato, scrivile!"}
       </div>
-      <div class="body" data-body="${ev.id}"></div>
-    `;
-    const toggle = (e) => {
-      e.stopPropagation();
-      focused = (focused === ev.id) ? null : ev.id;
-      applyFocus();
-    };
-    c.addEventListener('click', toggle);
-    c.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(e); }
-    });
-    cardsEl.appendChild(c);
-  });
-
-  function applyFocus(){
-    document.querySelectorAll('.card').forEach(c => {
-      const isF = c.dataset.id === focused;
-      c.dataset.focus = focused ? String(isF) : "false";
-      c.dataset.dim = (focused && !isF) ? "true" : "false";
-    });
+      <label>${st.gateLabel}</label>
+      <input type="text" id="gate-in" autocomplete="off" autocapitalize="characters">
+      <button id="gate-btn">Sblocca la tappa</button>
+      <div class="feedback" id="gate-fb"></div>`;
+  } else {
+    inner = `
+      <p class="flavor">${st.flavor}</p>
+      <div class="puzzle">${st.puzzle}</div>
+      <label>La tua risposta</label>
+      <input type="text" id="ans-in" autocomplete="off" autocapitalize="characters">
+      <button id="ans-btn">Prova</button>
+      <button class="ghost" id="hint-btn">Un piccolo aiuto</button>
+      <div class="feedback" id="ans-fb"></div>`;
   }
 
-  function pad(n){ return String(n).padStart(2, '0'); }
+  app.innerHTML = `
+    <div class="eyebrow">tappa ${prog+1} di 3 — ${NAMES[role]}</div>
+    <h1>Binario di Mezzo</h1>
+    ${mapSVG(role)}
+    <div class="card">
+      <h2>${st.from} → ${st.to}</h2>
+      <div class="route">linea della via emilia</div>
+      ${inner}
+    </div>
+    <p class="foot"><a href="#" id="reset">ricomincia da capo</a></p>`;
 
-  function render(){
-    const now = new Date();
-    EVENTS.forEach(ev => {
-      const body = document.querySelector(`[data-body="${ev.id}"]`);
-      let diff = ev.date - now;
-      if (diff <= 0){
-        body.innerHTML = `
-          <div class="arrived">
-            <div class="big">${ev.arrived.big}</div>
-            <div class="small">${ev.arrived.small}</div>
-          </div>`;
-        return;
-      }
-      const d = Math.floor(diff / 86400000); diff -= d*86400000;
-      const h = Math.floor(diff / 3600000);  diff -= h*3600000;
-      const m = Math.floor(diff / 60000);    diff -= m*60000;
-      const s = Math.floor(diff / 1000);
-      body.innerHTML = `
-        <div class="clock">
-          <div class="unit"><div class="num">${d}</div><div class="lbl">giorni</div></div>
-          <div class="unit"><div class="num">${pad(h)}</div><div class="lbl">ore</div></div>
-          <div class="unit"><div class="num">${pad(m)}</div><div class="lbl">min</div></div>
-          <div class="unit"><div class="num">${pad(s)}</div><div class="lbl">sec</div></div>
-        </div>`;
-    });
-  }
-
-  render();
-  setInterval(render, 1000);
-
-  /* -------- cuoricini al tocco sullo sfondo -------- */
-  const GLYPHS = ['♥','💛','💚','💗'];
-  function spawnHearts(x, y){
-    const n = 5 + Math.floor(Math.random()*3);
-    for (let i=0; i<n; i++){
-      const h = document.createElement('span');
-      h.className = 'heart';
-      h.textContent = GLYPHS[Math.floor(Math.random()*GLYPHS.length)];
-      const dx = (Math.random()-0.5) * 120;
-      h.style.left = (x + dx) + 'px';
-      h.style.top = y + 'px';
-      h.style.setProperty('--r', (Math.random()*80-40) + 'deg');
-      h.style.animationDelay = (Math.random()*0.15) + 's';
-      h.style.fontSize = (16 + Math.random()*14) + 'px';
-      heartsEl.appendChild(h);
-      setTimeout(() => h.remove(), 2700);
+  document.getElementById('reset').onclick = (e) => {
+    e.preventDefault();
+    if (confirm('Sicuro? Cancella tutti i progressi su questo telefono.')){
+      localStorage.clear(); sessionStorage.clear(); render();
     }
+  };
+
+  if (!gateOpen){
+    document.getElementById('gate-btn').onclick = () => {
+      const v = norm(document.getElementById('gate-in').value);
+      const fb = document.getElementById('gate-fb');
+      if (v === norm(rot13(st.gate))){
+        sessionStorage.setItem('bdm_gate_'+role+'_'+prog, '1');
+        store.setPartner(role, gatePartnerSteps(role, prog));
+        render();
+      } else {
+        fb.textContent = 'Non è questo… controlla il messaggio.';
+        fb.className = 'feedback err';
+      }
+    };
+  } else {
+    const tryAnswer = () => {
+      const v = norm(document.getElementById('ans-in').value);
+      const fb = document.getElementById('ans-fb');
+      if (st.answers.some(a => v === norm(rot13(a)))){
+        store.setProg(role, prog+1);
+        celebrate();
+        renderSolved(st, role, prog);
+      } else {
+        fb.textContent = 'Mmh, non ancora. Riprova!';
+        fb.className = 'feedback err';
+      }
+    };
+    document.getElementById('ans-btn').onclick = tryAnswer;
+    document.getElementById('ans-in').addEventListener('keydown', e => { if (e.key==='Enter') tryAnswer(); });
+    document.getElementById('hint-btn').onclick = (e) => {
+      e.target.outerHTML = `<div class="feedback ok">💡 ${st.hint}</div>`;
+    };
   }
+}
 
-  document.body.addEventListener('click', (e) => {
-    if (e.target.closest('.card')) return;
-    spawnHearts(e.clientX, e.clientY);
-  });
-  document.body.addEventListener('touchstart', (e) => {
-    if (e.target.closest('.card')) return;
-    const t = e.touches[0];
-    if (t) spawnHearts(t.clientX, t.clientY);
-  }, { passive: true });
+/* quanti step del partner sono provati da questo gate */
+function gatePartnerSteps(role, prog){
+  if (role === 'milano') return prog;       /* gate a T2 (prog=1) prova 1 step di lei, T3 prova 2 */
+  return prog + 1;                          /* per lei: gate a T1 prova 1 step di lui, ecc. */
+}
+
+function renderSolved(st, role, prog){
+  const partnerName = NAMES[otherRole(role)];
+  const isLast = prog + 1 >= 3;
+  const sendBlock = st.send ? `
+    <div class="codebox">
+      <div class="cap">✉️ manda a ${partnerName}</div>
+      <div class="code">${rot13(st.send)}</div>
+    </div>
+    <p class="sub" style="text-align:center; margin-top:10px">${st.sendNote}</p>` : '';
+
+  app.innerHTML = `
+    <div class="eyebrow">tappa ${prog+1} completata</div>
+    <h1>Binario di Mezzo</h1>
+    ${mapSVG(role)}
+    <div class="card" style="text-align:center">
+      <h2>✓ Sei arrivat${role==='milano'?'o':'a'} a ${st.to}</h2>
+      ${sendBlock}
+      <button id="next-btn">${isLast ? 'E adesso?' : 'Prossima tappa'}</button>
+    </div>`;
+  document.getElementById('next-btn').onclick = render;
+}
+
+function renderFinal(){
+  const role = store.role;
+  const met = store.met(role);
+  const partnerName = NAMES[otherRole(role)];
+
+  app.innerHTML = `
+    <div class="eyebrow">capolinea</div>
+    <h1>Binario di Mezzo</h1>
+    ${mapSVG(role)}
+    <div class="card final">
+      ${met ? `
+        <div class="big">Vi siete incontrati<br>a Parma. ♥</div>
+        <p class="sub">Più o meno a metà strada tra Milano e Bologna.<br>Come sempre.</p>
+      ` : `
+        <div class="big">Sei arrivat${role==='milano'?'o':'a'} a Parma.</div>
+        <p class="sub">Manda a ${partnerName} la tua metà della frase:</p>
+        <div class="half">${FINAL_HALF[role]}</div>
+        <p class="sub">Quando ricevi la sua metà, il viaggio è completo.</p>
+        <button id="met-btn">Ho ricevuto la sua metà ♥</button>
+      `}
+    </div>
+    <p class="foot"><a href="#" id="reset">ricomincia da capo</a></p>`;
+
+  const mb = document.getElementById('met-btn');
+  if (mb) mb.onclick = () => { store.setMet(role); celebrate(); celebrate(); render(); };
+  document.getElementById('reset').onclick = (e) => {
+    e.preventDefault();
+    if (confirm('Sicuro? Cancella tutti i progressi su questo telefono.')){
+      localStorage.clear(); sessionStorage.clear(); render();
+    }
+  };
+}
+
+/* ------------ cuoricini ------------ */
+function celebrate(){
+  const el = document.getElementById('hearts');
+  const w = window.innerWidth;
+  for (let i=0; i<10; i++){
+    const h = document.createElement('span');
+    h.className = 'heart';
+    h.textContent = ['♥','💛','💙','💗'][i%4];
+    h.style.left = (Math.random()*w) + 'px';
+    h.style.top = (window.innerHeight*0.7 + Math.random()*100) + 'px';
+    h.style.fontSize = (14 + Math.random()*16) + 'px';
+    h.style.setProperty('--r', (Math.random()*90-45)+'deg');
+    h.style.animationDelay = (Math.random()*0.3)+'s';
+    el.appendChild(h);
+    setTimeout(() => h.remove(), 2800);
+  }
+}
+
+function render(){
+  if (!store.role) renderRolePick();
+  else renderGame();
+}
+render();
 </script>
-
 </body>
 </html>
