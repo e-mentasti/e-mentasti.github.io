@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liar's Bar — calcolatore di probabilità</title>
+<meta name="description" content="Calcolatore di probabilità per Liar's Deck e Liar's Dice: quanto rischi davvero a chiamare, e quanto rischia lui.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <p class="eyebrow">Liar's Bar</p>
+  <h1>Calcolatore</h1>
+  <p class="lede">
+    Non ti dice solo quanto è probabile che stia mentendo. Ti dice se
+    conviene <em>a te</em> chiamarlo, visto come stanno i vostri revolver.
+  </p>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab is-active" data-panel="deck" role="tab">Deck</button>
+  <button class="tab" data-panel="dice" role="tab">Dice</button>
+  <button class="tab" data-panel="roulette" role="tab">Revolver</button>
+</nav>
+
+<!-- ══════════════════ LIAR'S DECK ══════════════════ -->
+<section class="panel is-active" id="panel-deck">
+
+  <div class="card">
+    <h2>1 · Carta del tavolo</h2>
+    <p class="help">Le carte di questo tipo, più i Jolly, sono <b>innocenti</b>. Tutto il resto è bugia.</p>
+    <div class="choices" id="deck-table">
+      <button class="choice is-on" data-v="K">Re</button>
+      <button class="choice" data-v="Q">Regina</button>
+      <button class="choice" data-v="A">Asso</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2 · Le 5 carte che ti hanno dato</h2>
+    <p class="help">Quelle di inizio round, anche se ne hai già giocate. Tu sai cos'erano: è informazione tua.</p>
+    <div class="steppers" id="deck-hand">
+      <div class="stepper" data-k="K"><span class="lab">Re</span><button class="pm" data-d="-1">−</button><b class="val">0</b><button class="pm" data-d="1">+</button></div>
+      <div class="stepper" data-k="Q"><span class="lab">Regina</span><button class="pm" data-d="-1">−</button><b class="val">0</b><button class="pm" data-d="1">+</button></div>
+      <div class="stepper" data-k="A"><span class="lab">Asso</span><button class="pm" data-d="-1">−</button><b class="val">0</b><button class="pm" data-d="1">+</button></div>
+      <div class="stepper" data-k="J"><span class="lab">Jolly</span><button class="pm" data-d="-1">−</button><b class="val">0</b><button class="pm" data-d="1">+</button></div>
+    </div>
+    <p class="tally" id="deck-tally">0 / 5 carte</p>
+  </div>
+
+  <div class="card">
+    <h2>3 · La giocata da valutare</h2>
+    <div class="row">
+      <span class="rlab">Carte appena calate</span>
+      <div class="choices tight" id="deck-played">
+        <button class="choice is-on" data-v="1">1</button>
+        <button class="choice" data-v="2">2</button>
+        <button class="choice" data-v="3">3</button>
+      </div>
+    </div>
+    <div class="row">
+      <span class="rlab">Carte calate dagli altri<br><small>in tutto il round, questa compresa</small></span>
+      <div class="stepper bare" id="deck-total"><button class="pm" data-d="-1">−</button><b class="val">1</b><button class="pm" data-d="1">+</button></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>4 · Stato dei revolver</h2>
+    <p class="help">Colpi a vuoto già sparati. Il tamburo non viene rimescolato: ogni scampato pericolo alza il prossimo rischio.</p>
+    <div class="row">
+      <span class="rlab">I tuoi</span>
+      <div class="choices tight" id="deck-me">
+        <button class="choice is-on" data-v="0">0</button><button class="choice" data-v="1">1</button><button class="choice" data-v="2">2</button>
+        <button class="choice" data-v="3">3</button><button class="choice" data-v="4">4</button><button class="choice" data-v="5">5</button>
+      </div>
+    </div>
+    <div class="row">
+      <span class="rlab">I suoi</span>
+      <div class="choices tight" id="deck-him">
+        <button class="choice is-on" data-v="0">0</button><button class="choice" data-v="1">1</button><button class="choice" data-v="2">2</button>
+        <button class="choice" data-v="3">3</button><button class="choice" data-v="4">4</button><button class="choice" data-v="5">5</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card out" id="deck-out">
+    <div class="verdict" id="deck-verdict">
+      <span class="vhead">—</span>
+      <span class="vsub">Inserisci le tue 5 carte</span>
+    </div>
+    <div class="big"><b id="deck-plie">—</b><span>probabilità che tra le carte calate ce ne sia almeno una falsa</span></div>
+    <ul class="facts" id="deck-facts"></ul>
+    <div class="scales">
+      <div class="scale"><span class="slab">Se chiami e sbagli<br><small>tocca a te sparare</small></span><b id="deck-risk-me">—</b></div>
+      <div class="scale"><span class="slab">Se chiami e hai ragione<br><small>tocca a lui sparare</small></span><b id="deck-risk-him">—</b></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════════════ LIAR'S DICE ══════════════════ -->
+<section class="panel" id="panel-dice">
+
+  <div class="card">
+    <h2>1 · Giocatori ancora vivi</h2>
+    <div class="choices" id="dice-players">
+      <button class="choice" data-v="2">2</button>
+      <button class="choice" data-v="3">3</button>
+      <button class="choice is-on" data-v="4">4</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2 · I tuoi 5 dadi</h2>
+    <p class="help">Gli <b>1 non sono jolly</b> qui: valgono solo come uno.</p>
+    <div class="steppers six" id="dice-mine">
+      <div class="stepper" data-k="1"><span class="lab">⚀</span><button class="pm" data-d="-1">−</button><b class="val">0</b><button class="pm" data-d="1">+</button></div>
+      <div class="stepper" data-k="2"><span class="lab">⚁</span><button class="pm" data-d="-1">−</button><b class="val">0</b><button class="pm" data-d="1">+</button></div>
+      <div class="stepper" data-k="3"><span class="lab">⚂</span><button class="pm" data-d="-1">−</button><b class="val">0</b><button class="pm" data-d="1">+</button></div>
+      <div class="stepper" data-k="4"><span class="lab">⚃</span><button class="pm" data-d="-1">−</button><b class="val">0</b><button class="pm" data-d="1">+</button></div>
+      <div class="stepper" data-k="5"><span class="lab">⚄</span><button class="pm" data-d="-1">−</button><b class="val">0</b><button class="pm" data-d="1">+</button></div>
+      <div class="stepper" data-k="6"><span class="lab">⚅</span><button class="pm" data-d="-1">−</button><b class="val">0</b><button class="pm" data-d="1">+</button></div>
+    </div>
+    <p class="tally" id="dice-tally">0 / 5 dadi</p>
+  </div>
+
+  <div class="card">
+    <h2>3 · La puntata sul tavolo</h2>
+    <div class="row">
+      <span class="rlab">Quanti dadi</span>
+      <div class="stepper bare" id="dice-qty"><button class="pm" data-d="-1">−</button><b class="val">3</b><button class="pm" data-d="1">+</button></div>
+    </div>
+    <div class="row">
+      <span class="rlab">Di che faccia</span>
+      <div class="choices tight" id="dice-face">
+        <button class="choice" data-v="1">⚀</button><button class="choice" data-v="2">⚁</button><button class="choice is-on" data-v="3">⚂</button>
+        <button class="choice" data-v="4">⚃</button><button class="choice" data-v="5">⚄</button><button class="choice" data-v="6">⚅</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>4 · Veleni già bevuti</h2>
+    <p class="help">Il secondo bicchiere è letale. Chi ne ha già uno gioca con la vita.</p>
+    <div class="row">
+      <span class="rlab">Tu</span>
+      <div class="choices tight" id="dice-me"><button class="choice is-on" data-v="0">0</button><button class="choice" data-v="1">1</button></div>
+    </div>
+    <div class="row">
+      <span class="rlab">Chi ha puntato</span>
+      <div class="choices tight" id="dice-him"><button class="choice is-on" data-v="0">0</button><button class="choice" data-v="1">1</button></div>
+    </div>
+  </div>
+
+  <div class="card out" id="dice-out">
+    <div class="verdict" id="dice-verdict">
+      <span class="vhead">—</span>
+      <span class="vsub">Inserisci i tuoi 5 dadi</span>
+    </div>
+    <div class="big"><b id="dice-ptrue">—</b><span>probabilità che la puntata sia vera</span></div>
+    <ul class="facts" id="dice-facts"></ul>
+  </div>
+
+  <div class="card">
+    <h2>Se invece rilanci</h2>
+    <p class="help">Probabilità che ogni rilancio possibile sia vero. Più è alta, più il rilancio è sicuro — e più è facile che qualcuno ci creda.</p>
+    <div class="gridwrap"><table class="grid" id="dice-grid"></table></div>
+  </div>
+
+</section>
+
+<!-- ══════════════════ REVOLVER ══════════════════ -->
+<section class="panel" id="panel-roulette">
+  <div class="card">
+    <h2>Il tamburo non gira</h2>
+    <p class="help">
+      Ogni giocatore ha il suo revolver: 6 camere, 1 proiettile, e si avanza
+      di una camera a ogni sparo. Non c'è rimescolamento. Quindi sopravvivere
+      non ti rende fortunato: ti avvicina.
+    </p>
+    <div class="gridwrap"><table class="grid" id="roul-table"></table></div>
+    <p class="help">
+      La colonna di destra è quella che conta nelle scelte a lungo termine:
+      se accetti di sparare tre volte partendo da zero, la probabilità di
+      non arrivare in fondo è già del 50%.
+    </p>
+  </div>
+  <div class="card">
+    <h2>Il veleno, invece</h2>
+    <p class="help">
+      In Liar's Dice non c'è probabilità: 2 bicchieri, il primo si supera,
+      il secondo uccide. Sempre. Il che rende la seconda chiamata sbagliata
+      infinitamente più costosa della prima — il calcolatore ne tiene conto.
+    </p>
+  </div>
+</section>
+
+<footer class="foot">
+  <details>
+    <summary>Come sono calcolati questi numeri</summary>
+    <div class="doc">
+      <p><b>Liar's Deck.</b> Il mazzo è di 20 carte: 6 Re, 6 Regine, 6 Assi, 2 Jolly.
+      Gli innocenti di un round sono sempre 8 — i 6 del tipo del tavolo più i 2 Jolly.
+      Tu ne vedi 5, quindi le 15 che non vedi contengono esattamente
+      <i>8 meno i tuoi</i> innocenti. Non è una stima, è sottrazione.</p>
+
+      <p>La probabilità che le carte appena calate siano tutte innocenti si calcola
+      come estrazione senza reimmissione da quelle 15 carte
+      (distribuzione ipergeometrica). Il calcolo assume che l'avversario
+      peschi a caso: <b>è la probabilità pura, non la lettura dell'avversario.</b>
+      Se uno bluffa sempre, o non bluffa mai, quella informazione vale più di
+      questi numeri.</p>
+
+      <p><b>Una conseguenza che vale la pena sapere.</b> Gli innocenti sono 8 su 20,
+      e almeno 3 stanno sempre fuori dalla tua mano. Facendo il conto per tutte le
+      mani possibili, la probabilità che una singola carta calata sia falsa
+      <b>non scende mai sotto il 47%</b>, e quando ne calano tre insieme non
+      scende sotto l'88%.
+      In questo gioco qualcuno sta quasi sempre mentendo: il problema non è
+      <i>se</i>, è se ti conviene dirlo.</p>
+
+      <p><b>La regola dei posti a sedere.</b> Se gli altri hanno calato più carte
+      di quanti innocenti esistono là fuori, alcune bugie sono già sul tavolo per
+      forza — indipendentemente da chi le ha messe. Il calcolatore te lo segnala:
+      è una certezza, non una probabilità.</p>
+
+      <p><b>Il revolver.</b> Camere rimaste = 6 meno i colpi a vuoto già sparati.
+      Il rischio del prossimo sparo è 1 diviso le camere rimaste: 1/6, poi 1/5,
+      1/4, 1/3, 1/2, infine certezza.</p>
+
+      <p><b>Il confronto finale.</b> Chiamare bugia mette in gioco due rischi opposti:
+      se sbagli spari tu, se hai ragione spara lui. Il calcolatore moltiplica ogni
+      probabilità per il relativo rischio di morte e li confronta. Conviene chiamare
+      quando il pericolo che scarichi su di lui supera quello che ti prendi addosso.</p>
+
+      <p><b>Liar's Dice.</b> I dadi che non vedi sono 5 per ogni altro giocatore vivo,
+      ognuno con 1 possibilità su 6 di mostrare una faccia data — gli 1 non sono jolly.
+      La probabilità che la puntata regga è la probabilità binomiale che tra quei dadi
+      ne escano abbastanza da coprire quanto manca ai tuoi. Per il veleno, la prima
+      dose vale metà di una morte, la seconda una morte intera: serve a pesare le due
+      situazioni, non è un dato del gioco.</p>
+
+      <p class="warn">Le varianti Devil e Chaos, e Liar's Poker, non sono coperte:
+      cambiano le carte e le conseguenze, e servirebbero regole verificate.</p>
+    </div>
+  </details>
+  <p class="back"><a href="../">← Torna alla home</a></p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

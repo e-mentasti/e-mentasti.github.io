@@ -1,0 +1,184 @@
+:root{
+  --bg:      #100e0c;
+  --card:    #1a1714;
+  --card-hi: #232019;
+  --ink:     #f2ede4;
+  --dim:     #948b7e;
+  --line:    rgba(242,237,228,0.10);
+  --accent:  #e0a458;
+  --good:    #7bc47f;
+  --bad:     #e0705e;
+}
+
+*{ box-sizing: border-box; margin: 0; padding: 0; }
+
+body{
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 1.75rem 1rem 4rem;
+}
+
+/* ---------- testata ---------- */
+.top{ margin-bottom: 1.5rem; }
+.eyebrow{
+  font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 0.35rem;
+}
+h1{ font-size: clamp(1.75rem, 7vw, 2.25rem); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 0.6rem; }
+.lede{ color: var(--dim); font-size: 0.9375rem; }
+.lede em{ color: var(--ink); font-style: normal; }
+
+/* ---------- tab ---------- */
+.tabs{
+  display: flex; gap: 0.375rem;
+  position: sticky; top: 0; z-index: 10;
+  background: var(--bg); padding: 0.5rem 0 0.75rem;
+}
+.tab{
+  flex: 1; padding: 0.6rem 0.5rem;
+  background: var(--card); color: var(--dim);
+  border: 1px solid var(--line); border-radius: 0.5rem;
+  font: inherit; font-size: 0.875rem; font-weight: 500;
+  cursor: pointer;
+}
+.tab.is-active{ background: var(--accent); color: #17130d; border-color: var(--accent); }
+
+.panel{ display: none; }
+.panel.is-active{ display: block; }
+
+/* ---------- schede ---------- */
+.card{
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+.card h2{
+  font-size: 0.8125rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--dim); margin-bottom: 0.5rem;
+}
+.help{ font-size: 0.8125rem; color: var(--dim); margin-bottom: 0.75rem; }
+.help b{ color: var(--ink); font-weight: 500; }
+
+/* ---------- bottoni scelta ---------- */
+.choices{ display: flex; gap: 0.375rem; flex-wrap: wrap; }
+.choices.tight{ gap: 0.25rem; }
+.choice{
+  flex: 1; min-width: 2.5rem; padding: 0.7rem 0.4rem;
+  background: var(--card-hi); color: var(--dim);
+  border: 1px solid var(--line); border-radius: 0.5rem;
+  font: inherit; font-size: 0.9375rem; cursor: pointer;
+}
+.choice.is-on{ background: var(--ink); color: #17130d; border-color: var(--ink); font-weight: 600; }
+
+/* ---------- righe etichetta + controllo ---------- */
+.row{
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.5rem 0; border-top: 1px solid var(--line);
+}
+.row:first-of-type{ border-top: 0; }
+.rlab{ flex: 1; font-size: 0.875rem; }
+.rlab small{ color: var(--dim); font-size: 0.75rem; }
+.row .choices{ flex: 0 1 auto; }
+
+/* ---------- stepper ---------- */
+.steppers{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.375rem; }
+.stepper{
+  display: flex; align-items: center; gap: 0.2rem;
+  background: var(--card-hi); border: 1px solid var(--line);
+  border-radius: 0.5rem; padding: 0.25rem 0.3rem;
+}
+.stepper.bare{ background: none; border: 0; padding: 0; }
+.stepper .lab{ flex: 1; font-size: 0.75rem; color: var(--dim); }
+.steppers.six .lab{ font-size: 1rem; flex: 0 0 auto; }
+.stepper .val{ min-width: 1.4rem; text-align: center; font-variant-numeric: tabular-nums; font-size: 1rem; }
+.pm{
+  /* 44px: la soglia sotto la quale il dito sbaglia bersaglio */
+  width: 2.75rem; height: 2.75rem; flex: none;
+  background: var(--card); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 0.375rem;
+  font: inherit; font-size: 1.05rem; line-height: 1; cursor: pointer;
+}
+/* su schermi stretti gli stepper vanno in colonna singola:
+   meglio scorrere che avere bersagli piccoli */
+@media (max-width: 26rem){
+  .steppers{ grid-template-columns: 1fr; }
+}
+@media (min-width: 30rem){
+  .steppers.six{ grid-template-columns: repeat(3, 1fr); }
+}
+.pm:active{ background: var(--accent); color: #17130d; }
+
+.tally{ margin-top: 0.6rem; font-size: 0.8125rem; color: var(--dim); }
+.tally.err{ color: var(--bad); }
+.tally.ok{ color: var(--good); }
+
+/* ---------- risultato ---------- */
+.out{ background: var(--card-hi); border-color: rgba(224,164,88,0.25); }
+
+.verdict{
+  display: block; padding: 0.75rem; margin-bottom: 0.875rem;
+  border-radius: 0.5rem; background: var(--card); border-left: 3px solid var(--dim);
+}
+.verdict.go{ border-left-color: var(--good); }
+.verdict.no{ border-left-color: var(--bad); }
+.verdict.meh{ border-left-color: var(--accent); }
+.vhead{ display: block; font-size: 1.0625rem; font-weight: 600; }
+.verdict.go .vhead{ color: var(--good); }
+.verdict.no .vhead{ color: var(--bad); }
+.verdict.meh .vhead{ color: var(--accent); }
+.vsub{ display: block; font-size: 0.8125rem; color: var(--dim); margin-top: 0.15rem; }
+
+.big{ text-align: center; padding: 0.5rem 0 0.875rem; }
+.big b{
+  display: block; font-size: 2.75rem; line-height: 1;
+  font-variant-numeric: tabular-nums; letter-spacing: -0.03em;
+}
+.big span{ display: block; font-size: 0.8125rem; color: var(--dim); margin-top: 0.35rem; }
+
+.facts{ list-style: none; font-size: 0.8125rem; }
+.facts li{ padding: 0.4rem 0; border-top: 1px solid var(--line); color: var(--dim); }
+.facts li b{ color: var(--ink); font-weight: 500; }
+.facts li.alert{ color: var(--accent); }
+
+.scales{ display: grid; grid-template-columns: 1fr 1fr; gap: 0.375rem; margin-top: 0.875rem; }
+.scale{
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 0.5rem; padding: 0.625rem; text-align: center;
+}
+.slab{ display: block; font-size: 0.75rem; color: var(--dim); margin-bottom: 0.35rem; }
+.slab small{ font-size: 0.6875rem; }
+.scale b{ font-size: 1.375rem; font-variant-numeric: tabular-nums; }
+
+/* ---------- tabelle ---------- */
+.gridwrap{ overflow-x: auto; }
+.grid{ width: 100%; border-collapse: collapse; font-size: 0.8125rem; font-variant-numeric: tabular-nums; }
+.grid th, .grid td{ padding: 0.4rem 0.35rem; text-align: center; border-top: 1px solid var(--line); }
+.grid th{ color: var(--dim); font-weight: 500; font-size: 0.75rem; }
+/* solo la griglia dei rilanci ha i simboli dei dadi come intestazione */
+#dice-grid th{ color: var(--ink); font-size: 1.25rem; line-height: 1; }
+.grid td.head{ color: var(--dim); text-align: left; white-space: nowrap; }
+.grid td.dead{ color: rgba(148,139,126,0.35); }
+.grid tr.now{ background: rgba(224,164,88,0.10); }
+
+/* ---------- piede ---------- */
+.foot{ margin-top: 1.5rem; font-size: 0.875rem; }
+summary{
+  cursor: pointer; color: var(--accent); padding: 0.75rem 0;
+  font-size: 0.875rem;
+}
+.doc{ color: var(--dim); font-size: 0.8125rem; }
+.doc p{ margin-bottom: 0.75rem; }
+.doc b{ color: var(--ink); font-weight: 500; }
+.doc i{ color: var(--ink); font-style: normal; }
+.doc .warn{ color: var(--accent); }
+.back{ margin-top: 1rem; }
+.back a{ color: var(--dim); }

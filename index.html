@@ -80,6 +80,21 @@
     text-decoration-thickness: 1px;
     text-underline-offset: 0.2em;
   }
+
+  .things{ list-style: none; }
+  .things li{ margin-bottom: 1rem; }
+  .things a{
+    display: block;
+    font-size: 1.0625rem;
+    font-weight: 500;
+    margin-bottom: 0.15rem;
+  }
+  .things span{
+    display: block;
+    color: var(--dim);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
 </style>
 </head>
 <body>
@@ -93,10 +108,15 @@
       cose per il web, e questo è il posto dove finiranno.
     </p>
 
-    <p>
-      Per ora c'è solo questo: un file HTML, servito da GitHub Pages.
-      Il minimo indispensabile perché un sito esista.
-    </p>
+    <hr class="rule">
+
+    <ul class="things">
+      <li>
+        <a href="liars-bar/">Liar's Bar — calcolatore</a>
+        <span>Quanto rischi davvero a chiamare bugia, e quanto rischia lui.
+        Probabilità esatte per Liar's Deck e Liar's Dice.</span>
+      </li>
+    </ul>
 
     <hr class="rule">
 
