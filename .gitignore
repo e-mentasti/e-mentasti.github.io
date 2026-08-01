@@ -1,0 +1,9 @@
+# File che macOS crea da solo in ogni cartella. Non c'entrano col progetto.
+.DS_Store
+
+# Cartelle di lavoro degli editor / strumenti
+.vscode/
+.idea/
+
+# Dipendenze scaricate: si reinstallano da sole, non si versionano
+node_modules/

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enrico Mentasti</title>
+<style>
+  :root{
+    --bg: #fbfaf8;
+    --ink: #1c1a17;
+    --dim: #6f6a63;
+    --line: rgba(28,26,23,0.12);
+    --accent: #b4542a;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg: #14130f;
+      --ink: #f0ece4;
+      --dim: #9a938a;
+      --line: rgba(240,236,228,0.14);
+      --accent: #e08a5c;
+    }
+  }
+
+  *{ box-sizing: border-box; margin: 0; padding: 0; }
+
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  main{
+    width: 100%;
+    max-width: 34rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+  }
+
+  .eyebrow{
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 0.75rem;
+  }
+
+  h1{
+    font-size: clamp(2rem, 6vw, 2.75rem);
+    line-height: 1.1;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.25rem;
+  }
+
+  p{
+    color: var(--dim);
+    margin-bottom: 1rem;
+    max-width: 30rem;
+  }
+
+  .rule{
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 2rem 0 1.5rem;
+  }
+
+  footer{
+    font-size: 0.8125rem;
+    color: var(--dim);
+  }
+
+  a{
+    color: var(--accent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+</style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Cantiere aperto</p>
+
+    <h1>Enrico Mentasti</h1>
+
+    <p>
+      Questa pagina è il punto di partenza. Sto imparando a costruire
+      cose per il web, e questo è il posto dove finiranno.
+    </p>
+
+    <p>
+      Per ora c'è solo questo: un file HTML, servito da GitHub Pages.
+      Il minimo indispensabile perché un sito esista.
+    </p>
+
+    <hr class="rule">
+
+    <footer>
+      Ultimo aggiornamento: agosto 2026 &middot;
+      <a href="https://github.com/e-mentasti/e-mentasti.github.io">codice sorgente</a>
+    </footer>
+  </main>
+</body>
+</html>
